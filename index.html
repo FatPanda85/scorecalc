@@ -112,36 +112,37 @@ const equips = [
 ];
 
 // === 道具資料 ===
-const items = [
-  ["火晶", 100],
-  ["稀有英雄碎片", 15],
-  ["史詩英雄碎片", 50],
-  ["傳說英雄碎片", 125],
-  ["加速-建造", 1],
-  ["加速-研究", 1],
-  ["加速-訓練/晉升", 1]
+// 定義每個活動專屬的道具
+const activityItems = [
+  [
+    ["火晶", 100],
+    ["稀有英雄碎片", 15],
+    ["史詩英雄碎片", 50],
+    ["傳說英雄碎片", 125],
+    ["加速-建造", 1],
+  ],
+  [
+    ["傳說英雄碎片", 125],
+    ["加速-建造", 1],
+  ],
+  [
+    ["史詩英雄碎片", 50],
+    ["稀有英雄碎片", 15],
+  ],
+  // 依此類推，你可以為每個活動自定義道具
 ];
-
-// === 動態建立頁面 ===
-const tabsDiv = document.getElementById("tabs");
-const tabContainer = document.getElementById("tabContainer");
 
 activities.forEach((name, idx) => {
   const id = idx + 1;
-
-  // 建立分頁按鈕
-  const btn = document.createElement("button");
-  btn.textContent = name;
-  btn.onclick = () => switchTab(id);
-  if (id === 1) btn.classList.add("active");
-  tabsDiv.appendChild(btn);
-
   // 建立分頁內容
   const div = document.createElement("div");
   div.id = "tab" + id;
   div.className = "tab-content" + (id === 1 ? " active" : "");
+  
+  // 取用該活動專屬的道具資料
+  const currentItems = activityItems[idx] || items;
 
-  // === 內容HTML ===
+  // 以 currentItems 生成道具的 HTML
   div.innerHTML = `
     <h2>${name}</h2>
     <div class="total-section">
@@ -168,7 +169,7 @@ activities.forEach((name, idx) => {
     <h3>道具</h3>
     <table>
       <tr><th>道具名稱</th><th>數量</th><th>積分</th></tr>
-      ${items.map(([item, score]) => `
+      ${currentItems.map(([item, score]) => `
         <tr>
           <td>${item}</td>
           <td><input type="number" class="qty" data-tab="${id}" data-score="${score}" value="0" min="0"></td>
@@ -184,6 +185,7 @@ activities.forEach((name, idx) => {
   `;
   tabContainer.appendChild(div);
 });
+
 
 // === 切換分頁 ===
 function switchTab(n) {
@@ -249,4 +251,5 @@ function resetTab(id) {
 
 </body>
 </html>
+
 
