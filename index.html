@@ -31,6 +31,7 @@
     color: white;
     font-size: 14px;
     cursor: pointer;
+    min-width: 100px;
   }
   .tabs button.active {
     background: #3b82f6;
@@ -82,52 +83,72 @@
 <div id="tabContainer"></div>
 
 <script>
-// === 活動名稱 ===
-const activities = [
-  "第一次軍備競演",
-  "第一次士官計畫",
-  "第二次軍備競演",
-  "第二次士官計畫",
-  "第三次軍備競演",
-  "第三次士官計畫",
-  "第四次軍備競演",
-  "第四次士官計畫",
-  "第五次軍備競演",
-  "活動1",
-  "活動2",
-  "活動3"
-];
-
-// === 裝備選項 ===
-const equips = [
-  ["良好", 1125],
-  ["良好1星", 1875],
-  ["稀有", 3000],
-  ["稀有1星", 4500],
-  ["史詩", 3230],
-  ["史詩T1", 3440],
-  ["傳說", 6250],
-  ["神話", 2600],
-  ["神話T4-3星", 3090],
-];
-
-// === 道具資料 ===
-const items = [
-  ["火晶", 100],
-  ["稀有英雄碎片", 15],
-  ["史詩英雄碎片", 50],
-  ["傳說英雄碎片", 125],
-  ["消耗1分鐘加速進行建造", 1],
-  ["消耗1分鐘加速進行研究", 1],
-  ["消耗1分鐘加速進行士兵訓練、晉升", 1]
+// === 🧭 活動資料設定區 ===
+// 每個活動可以獨立設定名稱、裝備與道具
+const activitiesData = [
+  {
+    name: "第一次軍備競演",
+    equips: [
+      ["良好", 1125], ["良好1星", 1875],
+      ["稀有", 3000], ["稀有1星", 4500],
+      ["史詩", 3230], ["史詩T1", 3440],
+      ["傳說", 6250], ["神話", 2600]
+    ],
+    items: [
+      ["火晶", 100],
+      ["稀有英雄碎片", 15],
+      ["史詩英雄碎片", 50],
+      ["傳說英雄碎片", 125],
+      ["加速-建造", 1],
+      ["加速-研究", 1],
+      ["加速-訓練/晉升", 1]
+    ]
+  },
+  {
+    name: "第一次士官計畫",
+    equips: [
+      ["普通", 500], ["良好", 1200], ["稀有", 2400], ["史詩", 3600]
+    ],
+    items: [
+      ["士官徽章", 200],
+      ["火晶", 100],
+      ["傳說碎片", 125]
+    ]
+  },
+  {
+    name: "第二次軍備競演",
+    equips: [
+      ["稀有", 3000], ["史詩", 3230], ["傳說", 6250], ["神話", 2600]
+    ],
+    items: [
+      ["火晶", 100],
+      ["加速-建造", 1],
+      ["加速-研究", 1],
+      ["加速-訓練/晉升", 1]
+    ]
+  },
+  {
+    name: "第二次士官計畫",
+    equips: [
+      ["新兵裝備", 900],
+      ["普通裝備", 1500],
+      ["精良裝備", 2700]
+    ],
+    items: [
+      ["訓練令", 10],
+      ["研究令", 20],
+      ["戰功令", 30]
+    ]
+  }
 ];
 
 // === 動態建立頁面 ===
 const tabsDiv = document.getElementById("tabs");
 const tabContainer = document.getElementById("tabContainer");
 
-activities.forEach((name, idx) => {
+activitiesData.forEach((activity, idx) => {
   const id = idx + 1;
+  const { name, equips, items } = activity;
 
   // 建立分頁按鈕
   const btn = document.createElement("button");
@@ -141,7 +162,7 @@ activities.forEach((name, idx) => {
   div.id = "tab" + id;
   div.className = "tab-content" + (id === 1 ? " active" : "");
 
-  // === 內容HTML ===
+  // 內容 HTML
   div.innerHTML = `
     <h2>${name}</h2>
     <div class="total-section">
@@ -157,8 +178,8 @@ activities.forEach((name, idx) => {
           <td>
             <select class="equip" data-tab="${id}">
               <option value="0">請選擇裝備</option>
-              ${equips.map(([name, score]) => 
-                `<option value="${score}">${name} (${score})</option>`).join('')}
+              ${equips.map(([ename, score]) =>
+                `<option value="${score}">${ename} (${score})</option>`).join('')}
             </select>
           </td>
           <td class="equip-total">0</td>
@@ -168,9 +189,9 @@ activities.forEach((name, idx) => {
     <h3>道具</h3>
     <table>
       <tr><th>道具名稱</th><th>數量</th><th>積分</th></tr>
-      ${items.map(([item, score]) => `
+      ${items.map(([iname, score]) => `
         <tr>
-          <td>${item}</td>
+          <td>${iname}</td>
           <td><input type="number" class="qty" data-tab="${id}" data-score="${score}" value="0" min="0"></td>
           <td class="subtotal">0</td>
         </tr>`).join("")}
@@ -185,7 +206,7 @@ activities.forEach((name, idx) => {
   tabContainer.appendChild(div);
 });
 
-// === 切換分頁 ===
+// === 分頁切換 ===
 function switchTab(n) {
   document.querySelectorAll(".tabs button").forEach((btn, i) => {
     btn.classList.toggle("active", i === n - 1);
@@ -195,7 +216,7 @@ function switchTab(n) {
   });
 }
 
-// === 計算積分 ===
+// === 即時計算積分 ===
 document.addEventListener("input", (e) => {
   const tab = e.target.closest(".tab-content");
   if (!tab) return;
