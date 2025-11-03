@@ -1,107 +1,522 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>活動積分試算</title>
+<title>活動積分試算器</title>
 <style>
-body { font-family: 'Segoe UI', sans-serif; background:#121212; color:white; margin:0; padding:1rem; }
-h2 { text-align:center; color:#ffd700; }
-.container { max-width:700px; margin:auto; }
-table { width:100%; border-collapse:collapse; margin-top:1rem; }
-th, td { border:1px solid #444; padding:0.5rem; text-align:center; }
-select, input { width:100%; padding:0.4rem; border-radius:6px; border:none; }
-button { width:100%; margin-top:10px; padding:10px; background:#ffd700; color:black; border:none; border-radius:8px; font-weight:bold; }
-.total { font-size:1.2rem; text-align:right; margin-top:1rem; }
-.tabs { display:flex; justify-content:space-around; background:#333; border-radius:8px; overflow:hidden; margin-bottom:1rem; }
-.tab { flex:1; padding:10px; text-align:center; cursor:pointer; background:#333; color:white; }
-.tab.active { background:#ffd700; color:black; }
+  body {
+    font-family: "Microsoft JhengHei", sans-serif;
+    background-color: #1a0f0f;
+    color: #fff3e0;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background-color: #8b0000;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #330000;
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 0.8rem;
+    text-align: center;
+    background-color: #4a0000;
+    color: #fff;
+    cursor: pointer;
+    border: 1px solid #660000;
+    transition: background-color 0.3s;
+  }
+
+  .tab-button.active {
+    background-color: #b22222;
+  }
+
+  .tab-content {
+    display: none;
+    padding: 1rem;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+
+  th, td {
+    border: 1px solid #5a0000;
+    padding: 0.6rem;
+    text-align: center;
+  }
+
+  th {
+    background-color: #5a0000;
+  }
+
+  input, select {
+    width: 80%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #3b0000;
+    color: white;
+    text-align: center;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  .reset-btn {
+    display: block;
+    width: 90%;
+    margin: 1rem auto;
+    padding: 0.8rem;
+    background-color: #b22222;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .reset-btn:hover {
+    background-color: #ff4444;
+  }
+
+  .score-box {
+    text-align: center;
+    background-color: #330000;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <h2>活動積分試算</h2>
+  <header>活動積分試算器</header>
+
   <div class="tabs">
-    <div class="tab active">第一次軍備競演</div>
-    <div class="tab">第一次士官計畫</div>
-    <div class="tab">第二次軍備競演</div>
-    <div class="tab">第二次士官計畫</div>
+    <div class="tab-button active" data-tab="1">活動1</div>
+    <div class="tab-button" data-tab="2">活動2</div>
+    <div class="tab-button" data-tab="3">活動3</div>
+    <div class="tab-button" data-tab="4">活動4</div>
+    <div class="tab-button" data-tab="5">活動5</div>
+    <div class="tab-button" data-tab="6">活動6</div>
+    <div class="tab-button" data-tab="7">活動7</div>
+    <div class="tab-button" data-tab="8">活動8</div>
+    <div class="tab-button" data-tab="9">活動9</div>
+    <div class="tab-button" data-tab="10">活動10</div>
+    <div class="tab-button" data-tab="11">活動11</div>
+    <div class="tab-button" data-tab="12">活動12</div>
   </div>
 
-  <label>目標積分：</label>
-  <input type="number" id="targetPoints" value="0">
+  <!-- 活動1 -->
+  <div id="tab-1" class="tab-content active">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore1" placeholder="輸入目前積分">
+    </div>
 
-  <table>
-    <thead><tr><th>裝備名稱</th><th>數量</th><th>積分</th></tr></thead>
-    <tbody id="equipmentTable">
-      <tr>
-        <td>
-          <select class="equip">
-            <option value="0">請選擇裝備</option>
-            <option value="1125">良好</option>
-            <option value="1875">良好1星</option>
-            <option value="3000">稀有</option>
-            <option value="4500">稀有1星</option>
-            <option value="5100">稀有2星</option>
-            <option value="5400">稀有3星</option>
-          </select>
-        </td>
-        <td><input type="number" class="equipQty" value="0"></td>
-        <td class="equipScore">0</td>
-      </tr>
-    </tbody>
-  </table>
+    <table>
+      <thead>
+        <tr>
+          <th>道具名稱</th>
+          <th>數量</th>
+          <th>積分</th>
+        </tr>
+      </thead>
+      <tbody id="items1">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
 
-  <table>
-    <thead><tr><th>道具名稱</th><th>數量</th><th>積分</th></tr></thead>
-    <tbody id="itemTable">
-      <tr><td>火晶 (100)</td><td><input type="number" class="itemQty" data-point="100" value="0"></td><td class="itemScore">0</td></tr>
-      <tr><td>稀有英雄碎片 (15)</td><td><input type="number" class="itemQty" data-point="15" value="0"></td><td class="itemScore">0</td></tr>
-      <tr><td>史詩英雄碎片 (50)</td><td><input type="number" class="itemQty" data-point="50" value="0"></td><td class="itemScore">0</td></tr>
-      <tr><td>傳說英雄碎片 (125)</td><td><input type="number" class="itemQty" data-point="125" value="0"></td><td class="itemScore">0</td></tr>
-    </tbody>
-  </table>
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore1" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore1">0</span><br>
+      <strong>差額：</strong><span id="diffScore1">0</span>
+    </div>
 
-  <div class="total">
-    <p>總積分：<span id="totalScore">0</span></p>
-    <p>積分差額：<span id="diffScore">0</span></p>
+    <button class="reset-btn" onclick="resetTab(1)">全部重置</button>
+  </div>
+  <!-- 活動2 -->
+  <div id="tab-2" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore2" placeholder="輸入目前積分">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>道具名稱</th>
+          <th>數量</th>
+          <th>積分</th>
+        </tr>
+      </thead>
+      <tbody id="items2">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore2" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore2">0</span><br>
+      <strong>差額：</strong><span id="diffScore2">0</span>
+    </div>
+
+    <button class="reset-btn" onclick="resetTab(2)">全部重置</button>
   </div>
 
-  <button onclick="resetAll()">全部重置</button>
+  <!-- 活動3 -->
+  <div id="tab-3" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore3" placeholder="輸入目前積分">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>道具名稱</th>
+          <th>數量</th>
+          <th>積分</th>
+        </tr>
+      </thead>
+      <tbody id="items3">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore3" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore3">0</span><br>
+      <strong>差額：</strong><span id="diffScore3">0</span>
+    </div>
+
+    <button class="reset-btn" onclick="resetTab(3)">全部重置</button>
+  </div>
+
+  <!-- 活動4 -->
+  <div id="tab-4" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore4" placeholder="輸入目前積分">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>道具名稱</th>
+          <th>數量</th>
+          <th>積分</th>
+        </tr>
+      </thead>
+      <tbody id="items4">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore4" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore4">0</span><br>
+      <strong>差額：</strong><span id="diffScore4">0</span>
+    </div>
+
+    <button class="reset-btn" onclick="resetTab(4)">全部重置</button>
+  </div>
+
+  <!-- 活動5 -->
+  <div id="tab-5" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore5" placeholder="輸入目前積分">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>道具名稱</th>
+          <th>數量</th>
+          <th>積分</th>
+        </tr>
+      </thead>
+      <tbody id="items5">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore5" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore5">0</span><br>
+      <strong>差額：</strong><span id="diffScore5">0</span>
+    </div>
+
+    <button class="reset-btn" onclick="resetTab(5)">全部重置</button>
+  </div>
+
+  <!-- 活動6 -->
+  <div id="tab-6" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore6" placeholder="輸入目前積分">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>道具名稱</th>
+          <th>數量</th>
+          <th>積分</th>
+        </tr>
+      </thead>
+      <tbody id="items6">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore6" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore6">0</span><br>
+      <strong>差額：</strong><span id="diffScore6">0</span>
+    </div>
+
+    <button class="reset-btn" onclick="resetTab(6)">全部重置</button>
+  </div>
+  <!-- 活動7 -->
+  <div id="tab-7" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore7" placeholder="輸入目前積分">
+    </div>
+    <table>
+      <thead><tr><th>道具名稱</th><th>數量</th><th>積分</th></tr></thead>
+      <tbody id="items7">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore7" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore7">0</span><br>
+      <strong>差額：</strong><span id="diffScore7">0</span>
+    </div>
+    <button class="reset-btn" onclick="resetTab(7)">全部重置</button>
+  </div>
+
+  <!-- 活動8 -->
+  <div id="tab-8" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore8" placeholder="輸入目前積分">
+    </div>
+    <table>
+      <thead><tr><th>道具名稱</th><th>數量</th><th>積分</th></tr></thead>
+      <tbody id="items8">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore8" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore8">0</span><br>
+      <strong>差額：</strong><span id="diffScore8">0</span>
+    </div>
+    <button class="reset-btn" onclick="resetTab(8)">全部重置</button>
+  </div>
+
+  <!-- 活動9 -->
+  <div id="tab-9" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore9" placeholder="輸入目前積分">
+    </div>
+    <table>
+      <thead><tr><th>道具名稱</th><th>數量</th><th>積分</th></tr></thead>
+      <tbody id="items9">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore9" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore9">0</span><br>
+      <strong>差額：</strong><span id="diffScore9">0</span>
+    </div>
+    <button class="reset-btn" onclick="resetTab(9)">全部重置</button>
+  </div>
+
+  <!-- 活動10 -->
+  <div id="tab-10" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore10" placeholder="輸入目前積分">
+    </div>
+    <table>
+      <thead><tr><th>道具名稱</th><th>數量</th><th>積分</th></tr></thead>
+      <tbody id="items10">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore10" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore10">0</span><br>
+      <strong>差額：</strong><span id="diffScore10">0</span>
+    </div>
+    <button class="reset-btn" onclick="resetTab(10)">全部重置</button>
+  </div>
+
+  <!-- 活動11 -->
+  <div id="tab-11" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore11" placeholder="輸入目前積分">
+    </div>
+    <table>
+      <thead><tr><th>道具名稱</th><th>數量</th><th>積分</th></tr></thead>
+      <tbody id="items11">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore11" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore11">0</span><br>
+      <strong>差額：</strong><span id="diffScore11">0</span>
+    </div>
+    <button class="reset-btn" onclick="resetTab(11)">全部重置</button>
+  </div>
+
+  <!-- 活動12 -->
+  <div id="tab-12" class="tab-content">
+    <div class="score-box">
+      <label>目前積分：</label>
+      <input type="number" id="currentScore12" placeholder="輸入目前積分">
+    </div>
+    <table>
+      <thead><tr><th>道具名稱</th><th>數量</th><th>積分</th></tr></thead>
+      <tbody id="items12">
+        <tr><td>專精石頭 (8000)</td><td><input type="number" class="qty" data-point="8000"></td><td class="total">0</td></tr>
+        <tr><td>火晶 (10000)</td><td><input type="number" class="qty" data-point="10000"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘建造 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘研究 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+        <tr><td>消耗1分鐘訓練 (1)</td><td><input type="number" class="qty" data-point="1"></td><td class="total">0</td></tr>
+      </tbody>
+    </table>
+    <div class="score-box">
+      <label>目標積分：</label>
+      <input type="number" id="targetScore12" placeholder="輸入目標積分"><br><br>
+      <strong>總積分：</strong><span id="totalScore12">0</span><br>
+      <strong>差額：</strong><span id="diffScore12">0</span>
+    </div>
+    <button class="reset-btn" onclick="resetTab(12)">全部重置</button>
+  </div>
 </div>
 
 <script>
-function calc() {
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+
+function calculate(tabId) {
+  const inputs = document.querySelectorAll('#items' + tabId + ' .qty');
   let total = 0;
-
-  document.querySelectorAll('.equip').forEach((sel, i) => {
-    let val = parseInt(sel.value) || 0;
-    let qty = parseInt(document.querySelectorAll('.equipQty')[i].value) || 0;
-    let score = val * 3 * qty;
-    document.querySelectorAll('.equipScore')[i].innerText = score;
-    total += score;
+  inputs.forEach(input => {
+    const val = parseFloat(input.value) || 0;
+    const point = parseFloat(input.dataset.point);
+    const rowTotal = val * point;
+    input.parentElement.nextElementSibling.textContent = rowTotal.toLocaleString();
+    total += rowTotal;
   });
+  document.getElementById('totalScore' + tabId).textContent = total.toLocaleString();
 
-  document.querySelectorAll('.itemQty').forEach((input, i) => {
-    let val = parseInt(input.dataset.point) || 0;
-    let qty = parseInt(input.value) || 0;
-    let score = val * qty;
-    document.querySelectorAll('.itemScore')[i].innerText = score;
-    total += score;
+  const target = parseFloat(document.getElementById('targetScore' + tabId).value) || 0;
+  const diff = target - total;
+  document.getElementById('diffScore' + tabId).textContent = diff.toLocaleString();
+}
+
+function resetTab(tabId) {
+  document.querySelectorAll('#items' + tabId + ' .qty').forEach(i => i.value = '');
+  document.getElementById('targetScore' + tabId).value = '';
+  document.getElementById('currentScore' + tabId).value = '';
+  document.getElementById('totalScore' + tabId).textContent = '0';
+  document.getElementById('diffScore' + tabId).textContent = '0';
+  document.querySelectorAll('#items' + tabId + ' .total').forEach(td => td.textContent = '0');
+}
+
+document.querySelectorAll('.qty, input[type="number"]').forEach(input => {
+  input.addEventListener('input', () => {
+    const activeTab = document.querySelector('.tab-content.active').id.split('-')[1];
+    calculate(activeTab);
   });
-
-  let target = parseInt(document.getElementById('targetPoints').value) || 0;
-  document.getElementById('totalScore').innerText = total;
-  document.getElementById('diffScore').innerText = total - target;
-}
-function resetAll(){
-  document.querySelectorAll('input').forEach(i=>i.value=0);
-  document.querySelectorAll('select').forEach(s=>s.selectedIndex=0);
-  calc();
-}
-document.querySelectorAll('input, select').forEach(e=>e.addEventListener('input',calc));
-calc();
+});
 </script>
 </body>
 </html>
-
