@@ -1,6 +1,251 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>活動積分試算器</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #1a1a1a;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #5c0000;
+      padding: 15px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .tab-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      background-color: #2e0000;
+      padding: 5px;
+    }
+    .tab-btn {
+      flex: 1 0 45%;
+      margin: 5px;
+      padding: 10px;
+      border: none;
+      background-color: #4a0000;
+      color: white;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .tab-btn.active {
+      background-color: #a00000;
+    }
+    .tab-content {
+      display: none;
+      padding: 10px;
+      animation: fadeIn 0.3s ease-in;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    table {
+      width: 95%;
+      margin: 10px auto;
+      border-collapse: collapse;
+      background-color: #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+    }
+    th {
+      background-color: #600000;
+      color: #fff;
+    }
+    input, select {
+      width: 90%;
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+      text-align: center;
+    }
+    .total-section {
+      margin: 15px auto;
+      padding: 10px;
+      width: 90%;
+      background-color: #2e2e2e;
+      border-radius: 10px;
+    }
+    .btn-reset {
+      background-color: #800000;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-reset:hover {
+      background-color: #a00000;
+    }
+  </style>
+</head>
+<body>
+  <header>🔥 活動積分試算器 🔥</header>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="tab1">第一次軍備競演</button>
+    <button class="tab-btn" data-tab="tab2">第一次士官計畫</button>
+    <button class="tab-btn" data-tab="tab3">第二次軍備競演</button>
+    <button class="tab-btn" data-tab="tab4">第二次士官計畫</button>
+    <button class="tab-btn" data-tab="tab5">活動5</button>
+    <button class="tab-btn" data-tab="tab6">活動6</button>
+    <button class="tab-btn" data-tab="tab7">活動7</button>
+    <button class="tab-btn" data-tab="tab8">活動8</button>
+    <button class="tab-btn" data-tab="tab9">活動9</button>
+    <button class="tab-btn" data-tab="tab10">活動10</button>
+    <button class="tab-btn" data-tab="tab11">活動11</button>
+    <button class="tab-btn" data-tab="tab12">活動12</button>
+  </div>
+  <!-- 活動1 -->
+  <div id="tab1" class="tab-content active">
+    <h2>第一次軍備競演</h2>
+
+    <div class="total-section">
+      <label>目前積分：</label>
+      <input type="number" id="current1" placeholder="輸入目前積分" /><br /><br />
+      <label>目標積分：</label>
+      <input type="number" id="target1" placeholder="輸入目標積分" />
+    </div>
+
+    <table>
+      <tr><th>道具名稱</th><th>數量</th><th>積分</th></tr>
+      <tr><td>火晶 (100)</td><td><input type="number" class="qty" data-score="100"></td><td class="subtotal">0</td></tr>
+      <tr><td>稀有英雄碎片 (15)</td><td><input type="number" class="qty" data-score="15"></td><td class="subtotal">0</td></tr>
+      <tr><td>史詩英雄碎片 (50)</td><td><input type="number" class="qty" data-score="50"></td><td class="subtotal">0</td></tr>
+      <tr><td>傳說英雄碎片 (125)</td><td><input type="number" class="qty" data-score="125"></td><td class="subtotal">0</td></tr>
+      <tr><td>加速-建造 (1)</td><td><input type="number" class="qty" data-score="1"></td><td class="subtotal">0</td></tr>
+      <tr><td>加速-研究 (1)</td><td><input type="number" class="qty" data-score="1"></td><td class="subtotal">0</td></tr>
+      <tr><td>加速-訓練/晉升 (1)</td><td><input type="number" class="qty" data-score="1"></td><td class="subtotal">0</td></tr>
+    </table>
+
+    <div class="total-section">
+      <label>總積分：</label>
+      <span id="total1">0</span><br />
+      <label>差額積分：</label>
+      <span id="diff1">0</span><br />
+      <button class="btn-reset" onclick="resetTab(1)">全部重置</button>
+    </div>
+  </div>
+
+  <!-- 活動2~12：結構相同，只改ID與標題 -->
+  ${[...Array(11)].map((_,i)=>`
+  <div id="tab${i+2}" class="tab-content">
+    <h2>${i<3 ? ['第一次士官計畫','第二次軍備競演','第二次士官計畫'][i] : '活動'+(i+2)}</h2>
+
+    <div class="total-section">
+      <label>目前積分：</label>
+      <input type="number" id="current${i+2}" placeholder="輸入目前積分" /><br /><br />
+      <label>目標積分：</label>
+      <input type="number" id="target${i+2}" placeholder="輸入目標積分" />
+    </div>
+
+    <table>
+      <tr><th>道具名稱</th><th>數量</th><th>積分</th></tr>
+      <tr><td>火晶 (100)</td><td><input type="number" class="qty" data-score="100"></td><td class="subtotal">0</td></tr>
+      <tr><td>稀有英雄碎片 (15)</td><td><input type="number" class="qty" data-score="15"></td><td class="subtotal">0</td></tr>
+      <tr><td>史詩英雄碎片 (50)</td><td><input type="number" class="qty" data-score="50"></td><td class="subtotal">0</td></tr>
+      <tr><td>傳說英雄碎片 (125)</td><td><input type="number" class="qty" data-score="125"></td><td class="subtotal">0</td></tr>
+      <tr><td>加速-建造 (1)</td><td><input type="number" class="qty" data-score="1"></td><td class="subtotal">0</td></tr>
+      <tr><td>加速-研究 (1)</td><td><input type="number" class="qty" data-score="1"></td><td class="subtotal">0</td></tr>
+      <tr><td>加速-訓練/晉升 (1)</td><td><input type="number" class="qty" data-score="1"></td><td class="subtotal">0</td></tr>
+    </table>
+
+    <div class="total-section">
+      <label>總積分：</label>
+      <span id="total${i+2}">0</span><br />
+      <label>差額積分：</label>
+      <span id="diff${i+2}">0</span><br />
+      <button class="btn-reset" onclick="resetTab(${i+2})">全部重置</button>
+    </div>
+  </div>`).join('')}
+  <script>
+    // 🔢 更新積分計算
+    function updateScores() {
+      document.querySelectorAll('.tab-content').forEach((tab, index) => {
+        const id = index + 1;
+        let total = 0;
+
+        // 計算每個道具數量 × 積分
+        tab.querySelectorAll('.qty').forEach((input, i) => {
+          const qty = parseInt(input.value) || 0;
+          const score = parseInt(input.dataset.score);
+          const subtotal = qty * score;
+          tab.querySelectorAll('.subtotal')[i].textContent = subtotal.toLocaleString();
+          total += subtotal;
+        });
+
+        // 顯示總積分
+        const totalSpan = document.getElementById(`total${id}`);
+        if (totalSpan) totalSpan.textContent = total.toLocaleString();
+
+        // 計算差額（目標 - 目前 - 總積分）
+        const current = parseInt(document.getElementById(`current${id}`)?.value || 0);
+        const target = parseInt(document.getElementById(`target${id}`)?.value || 0);
+        const diff = target - (current + total);
+        const diffSpan = document.getElementById(`diff${id}`);
+        if (diffSpan) diffSpan.textContent = diff.toLocaleString();
+      });
+    }
+
+    // 🔁 全部重置功能
+    function resetTab(id) {
+      const tab = document.getElementById(`tab${id}`);
+      if (!tab) return;
+      tab.querySelectorAll('input').forEach(input => input.value = '');
+      tab.querySelectorAll('.subtotal').forEach(cell => cell.textContent = '0');
+      document.getElementById(`total${id}`).textContent = '0';
+      document.getElementById(`diff${id}`).textContent = '0';
+    }
+
+    // 監聽輸入變動，自動更新
+    document.addEventListener('input', e => {
+      if (e.target.classList.contains('qty') ||
+          e.target.id.startsWith('current') ||
+          e.target.id.startsWith('target')) {
+        updateScores();
+      }
+    });
+
+    // 🔘 分頁切換控制
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+
+        // 清除所有 active 狀態
+        tabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+
+        // 顯示對應分頁
+        btn.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>活動積分試算</title>
@@ -112,37 +357,36 @@ const equips = [
 ];
 
 // === 道具資料 ===
-// 定義每個活動專屬的道具
-const activityItems = [
-  [
-    ["火晶", 100],
-    ["稀有英雄碎片", 15],
-    ["史詩英雄碎片", 50],
-    ["傳說英雄碎片", 125],
-    ["加速-建造", 1],
-  ],
-  [
-    ["傳說英雄碎片", 125],
-    ["加速-建造", 1],
-  ],
-  [
-    ["史詩英雄碎片", 50],
-    ["稀有英雄碎片", 15],
-  ],
-  // 依此類推，你可以為每個活動自定義道具
+const items = [
+  ["火晶", 100],
+  ["稀有英雄碎片", 15],
+  ["史詩英雄碎片", 50],
+  ["傳說英雄碎片", 125],
+  ["加速-建造", 1],
+  ["加速-研究", 1],
+  ["加速-訓練/晉升", 1]
 ];
+
+// === 動態建立頁面 ===
+const tabsDiv = document.getElementById("tabs");
+const tabContainer = document.getElementById("tabContainer");
 
 activities.forEach((name, idx) => {
   const id = idx + 1;
+
+  // 建立分頁按鈕
+  const btn = document.createElement("button");
+  btn.textContent = name;
+  btn.onclick = () => switchTab(id);
+  if (id === 1) btn.classList.add("active");
+  tabsDiv.appendChild(btn);
+
   // 建立分頁內容
   const div = document.createElement("div");
   div.id = "tab" + id;
   div.className = "tab-content" + (id === 1 ? " active" : "");
-  
-  // 取用該活動專屬的道具資料
-  const currentItems = activityItems[idx] || items;
 
-  // 以 currentItems 生成道具的 HTML
+  // === 內容HTML ===
   div.innerHTML = `
     <h2>${name}</h2>
     <div class="total-section">
@@ -169,7 +413,7 @@ activities.forEach((name, idx) => {
     <h3>道具</h3>
     <table>
       <tr><th>道具名稱</th><th>數量</th><th>積分</th></tr>
-      ${currentItems.map(([item, score]) => `
+      ${items.map(([item, score]) => `
         <tr>
           <td>${item}</td>
           <td><input type="number" class="qty" data-tab="${id}" data-score="${score}" value="0" min="0"></td>
@@ -185,7 +429,6 @@ activities.forEach((name, idx) => {
   `;
   tabContainer.appendChild(div);
 });
-
 
 // === 切換分頁 ===
 function switchTab(n) {
@@ -226,7 +469,7 @@ function updateTab(tabId) {
   document.querySelectorAll(`#tab${tabId} .qty`).forEach(input => {
     const qty = Number(input.value) || 0;
     const score = Number(input.dataset.score);
-    const subtotal = qty * score * 1;
+    const subtotal = qty * score * 3;
     input.parentElement.nextElementSibling.textContent = subtotal;
     total += subtotal;
   });
@@ -252,4 +495,7 @@ function resetTab(id) {
 </body>
 </html>
 
+  </script>
+</body>
+</html>
 
