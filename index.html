@@ -224,7 +224,7 @@ function updateTab(tabId) {
   document.querySelectorAll(`#tab${tabId} .qty`).forEach(input => {
     const qty = Number(input.value) || 0;
     const score = Number(input.dataset.score);
-    const subtotal = qty * score * 3;
+    const subtotal = qty * score * 1;
     input.parentElement.nextElementSibling.textContent = subtotal;
     total += subtotal;
   });
@@ -249,3 +249,4 @@ function resetTab(id) {
 
 </body>
 </html>
+
