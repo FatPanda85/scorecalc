@@ -117,9 +117,9 @@ const items = [
   ["稀有英雄碎片", 15],
   ["史詩英雄碎片", 50],
   ["傳說英雄碎片", 125],
-  ["加速-建造", 1],
-  ["加速-研究", 1],
-  ["加速-訓練/晉升", 1]
+  ["消耗1分鐘加速進行建造", 1],
+  ["消耗1分鐘加速進行研究", 1],
+  ["消耗1分鐘加速進行士兵訓練、晉升", 1]
 ];
 
 // === 動態建立頁面 ===
@@ -202,12 +202,6 @@ document.addEventListener("input", (e) => {
   const tabId = tab.id.replace("tab", "");
   updateTab(tabId);
 });
-document.addEventListener("change", (e) => {
-  const tab = e.target.closest(".tab-content");
-  if (!tab) return;
-  const tabId = tab.id.replace("tab", "");
-  updateTab(tabId);
-});
 
 function updateTab(tabId) {
   let total = 0;
@@ -216,7 +210,7 @@ function updateTab(tabId) {
   document.querySelectorAll(`#tab${tabId} .equip`).forEach(sel => {
     const val = Number(sel.value);
     const subtotal = val * 3;
-    sel.parentElement.nextElementSibling.textContent = subtotal;
+    sel.closest("tr").querySelector(".equip-total").textContent = subtotal;
     total += subtotal;
   });
 
@@ -224,8 +218,8 @@ function updateTab(tabId) {
   document.querySelectorAll(`#tab${tabId} .qty`).forEach(input => {
     const qty = Number(input.value) || 0;
     const score = Number(input.dataset.score);
-    const subtotal = qty * score * 1;
-    input.parentElement.nextElementSibling.textContent = subtotal;
+    const subtotal = qty * score;
+    input.closest("tr").querySelector(".subtotal").textContent = subtotal;
     total += subtotal;
   });
 
