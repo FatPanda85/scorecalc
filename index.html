@@ -8,7 +8,6 @@
   body {
     font-family: "Microsoft JhengHei", sans-serif;
     margin: 0;
-    padding: 0;
     background: #f9fafb;
   }
   header {
@@ -79,13 +78,11 @@
 <body>
 
 <header>活動積分試算</header>
-
 <div class="tabs" id="tabs"></div>
-
 <div id="tabContainer"></div>
 
 <script>
-// ====== 資料設定 ======
+// === 活動名稱 ===
 const activities = [
   "第一次軍備競演",
   "第一次士官計畫",
@@ -101,39 +98,74 @@ const activities = [
   "活動3"
 ];
 
-const items = [
-  ["火晶 (100)", 100],
-  ["稀有英雄碎片 (15)", 15],
-  ["史詩英雄碎片 (50)", 50],
-  ["傳說英雄碎片 (125)", 125],
-  ["加速-建造 (1)", 1],
-  ["加速-研究 (1)", 1],
-  ["加速-訓練/晉升 (1)", 1]
+// === 裝備選項 ===
+const equips = [
+  ["良好", 1125],
+  ["良好1星", 1875],
+  ["稀有", 3000],
+  ["稀有1星", 4500],
+  ["史詩", 3230],
+  ["史詩T1", 3440],
+  ["傳說", 6250],
+  ["神話", 2600],
+  ["神話T4-3星", 3090],
 ];
 
-// ====== 自動生成分頁與內容 ======
-const tabContainer = document.getElementById("tabContainer");
+// === 道具資料 ===
+const items = [
+  ["火晶", 100],
+  ["稀有英雄碎片", 15],
+  ["史詩英雄碎片", 50],
+  ["傳說英雄碎片", 125],
+  ["加速-建造", 1],
+  ["加速-研究", 1],
+  ["加速-訓練/晉升", 1]
+];
+
+// === 動態建立頁面 ===
 const tabsDiv = document.getElementById("tabs");
+const tabContainer = document.getElementById("tabContainer");
 
 activities.forEach((name, idx) => {
   const id = idx + 1;
+
+  // 建立分頁按鈕
   const btn = document.createElement("button");
   btn.textContent = name;
   btn.onclick = () => switchTab(id);
   if (id === 1) btn.classList.add("active");
   tabsDiv.appendChild(btn);
 
+  // 建立分頁內容
   const div = document.createElement("div");
   div.id = "tab" + id;
   div.className = "tab-content" + (id === 1 ? " active" : "");
+
+  // === 內容HTML ===
   div.innerHTML = `
     <h2>${name}</h2>
     <div class="total-section">
-      <label>目前積分：</label>
-      <input type="number" id="current${id}" placeholder="輸入目前積分" /><br/><br/>
       <label>目標積分：</label>
       <input type="number" id="target${id}" placeholder="輸入目標積分" />
     </div>
+    <h3>裝備選項（×3倍積分）</h3>
+    <table>
+      <tr><th>裝備</th><th>選擇</th><th>積分</th></tr>
+      ${[1,2,3,4].map(i => `
+        <tr>
+          <td>裝備${i}</td>
+          <td>
+            <select class="equip" data-tab="${id}">
+              <option value="0">請選擇裝備</option>
+              ${equips.map(([name, score]) => 
+                `<option value="${score}">${name} (${score})</option>`).join('')}
+            </select>
+          </td>
+          <td class="equip-total">0</td>
+        </tr>`).join("")}
+    </table>
+
+    <h3>道具</h3>
     <table>
       <tr><th>道具名稱</th><th>數量</th><th>積分</th></tr>
       ${items.map(([item, score]) => `
@@ -143,6 +175,7 @@ activities.forEach((name, idx) => {
           <td class="subtotal">0</td>
         </tr>`).join("")}
     </table>
+
     <div class="total-section">
       <label>總積分：</label><span id="total${id}">0</span><br/>
       <label>差額積分：</label><span id="diff${id}">0</span><br/>
@@ -152,7 +185,7 @@ activities.forEach((name, idx) => {
   tabContainer.appendChild(div);
 });
 
-// ====== 切換分頁 ======
+// === 切換分頁 ===
 function switchTab(n) {
   document.querySelectorAll(".tabs button").forEach((btn, i) => {
     btn.classList.toggle("active", i === n - 1);
@@ -162,31 +195,52 @@ function switchTab(n) {
   });
 }
 
-// ====== 計算積分 ======
+// === 計算積分 ===
 document.addEventListener("input", (e) => {
-  if (e.target.classList.contains("qty")) {
-    const tabId = e.target.dataset.tab;
-    const rows = document.querySelectorAll(`#tab${tabId} .qty`);
-    let total = 0;
-    rows.forEach((input) => {
-      const qty = Number(input.value) || 0;
-      const score = Number(input.dataset.score);
-      const subtotal = qty * score * 3;
-      input.parentElement.nextElementSibling.textContent = subtotal;
-      total += subtotal;
-    });
-    document.getElementById(`total${tabId}`).textContent = total;
-    const current = Number(document.getElementById(`current${tabId}`).value) || 0;
-    const target = Number(document.getElementById(`target${tabId}`).value) || 0;
-    document.getElementById(`diff${tabId}`).textContent = Math.max(target - (current + total), 0);
-  }
+  const tab = e.target.closest(".tab-content");
+  if (!tab) return;
+  const tabId = tab.id.replace("tab", "");
+  updateTab(tabId);
+});
+document.addEventListener("change", (e) => {
+  const tab = e.target.closest(".tab-content");
+  if (!tab) return;
+  const tabId = tab.id.replace("tab", "");
+  updateTab(tabId);
 });
 
-// ====== 重置功能 ======
+function updateTab(tabId) {
+  let total = 0;
+
+  // 裝備積分
+  document.querySelectorAll(`#tab${tabId} .equip`).forEach(sel => {
+    const val = Number(sel.value);
+    const subtotal = val * 3;
+    sel.parentElement.nextElementSibling.textContent = subtotal;
+    total += subtotal;
+  });
+
+  // 道具積分
+  document.querySelectorAll(`#tab${tabId} .qty`).forEach(input => {
+    const qty = Number(input.value) || 0;
+    const score = Number(input.dataset.score);
+    const subtotal = qty * score * 3;
+    input.parentElement.nextElementSibling.textContent = subtotal;
+    total += subtotal;
+  });
+
+  document.getElementById(`total${tabId}`).textContent = total;
+
+  const target = Number(document.getElementById(`target${tabId}`).value) || 0;
+  const diff = Math.max(target - total, 0);
+  document.getElementById(`diff${tabId}`).textContent = diff;
+}
+
+// === 重置功能 ===
 function resetTab(id) {
   document.querySelectorAll(`#tab${id} .qty`).forEach(input => input.value = 0);
-  document.querySelectorAll(`#tab${id} .subtotal`).forEach(td => td.textContent = 0);
-  document.getElementById(`current${id}`).value = "";
+  document.querySelectorAll(`#tab${id} .subtotal, #tab${id} .equip-total`).forEach(td => td.textContent = 0);
+  document.querySelectorAll(`#tab${id} .equip`).forEach(sel => sel.value = 0);
   document.getElementById(`target${id}`).value = "";
   document.getElementById(`total${id}`).textContent = "0";
   document.getElementById(`diff${id}`).textContent = "0";
