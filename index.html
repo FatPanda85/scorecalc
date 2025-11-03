@@ -112,18 +112,18 @@
   <header>活動積分試算器</header>
 
   <div class="tabs">
-    <div class="tab-button active" data-tab="1">活動1</div>
-    <div class="tab-button" data-tab="2">活動2</div>
-    <div class="tab-button" data-tab="3">活動3</div>
-    <div class="tab-button" data-tab="4">活動4</div>
-    <div class="tab-button" data-tab="5">活動5</div>
-    <div class="tab-button" data-tab="6">活動6</div>
-    <div class="tab-button" data-tab="7">活動7</div>
-    <div class="tab-button" data-tab="8">活動8</div>
-    <div class="tab-button" data-tab="9">活動9</div>
-    <div class="tab-button" data-tab="10">活動10</div>
-    <div class="tab-button" data-tab="11">活動11</div>
-    <div class="tab-button" data-tab="12">活動12</div>
+    <div id="tab1" class="tab-content active">…活動1…</div>
+    <div id="tab1" class="tab-content active">…活動2…</div>
+    <div id="tab1" class="tab-content active">…活動3…</div>
+    <div id="tab1" class="tab-content active">…活動4…</div>
+    <div id="tab1" class="tab-content active">…活動5…</div>
+    <div id="tab1" class="tab-content active">…活動6…</div>
+    <div id="tab1" class="tab-content active">…活動7…</div>
+    <div id="tab1" class="tab-content active">…活動8…</div>
+    <div id="tab1" class="tab-content active">…活動9…</div>
+    <div id="tab1" class="tab-content active">…活動10…</div>
+    <div id="tab1" class="tab-content active">…活動11…</div>
+    <div id="tab1" class="tab-content active">…活動12…</div>
   </div>
 
   <!-- 活動1 -->
@@ -518,5 +518,25 @@ document.querySelectorAll('.qty, input[type="number"]').forEach(input => {
   });
 });
 </script>
+  <script>
+  // 分頁切換功能
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+
+      // 移除全部 active 樣式
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+
+      // 顯示對應分頁
+      btn.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+</script>
 </body>
 </html>
+
