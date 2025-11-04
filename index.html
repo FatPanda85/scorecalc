@@ -1,90 +1,10 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>活動積分試算</title>
-<style>
-  body {
-    font-family: "Microsoft JhengHei", sans-serif;
-    margin: 0;
-    background: #f9fafb;
-  }
-  header {
-    background: #2563eb;
-    color: white;
-    text-align: center;
-    padding: 12px 0;
-    font-size: 20px;
-    font-weight: bold;
-  }
-  .tabs {
-    display: flex;
-    overflow-x: auto;
-    background: #1e40af;
-  }
-  .tabs button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    background: #1e40af;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    min-width: 100px;
-  }
-  .tabs button.active {
-    background: #3b82f6;
-  }
-  .tab-content {
-    display: none;
-    padding: 10px;
-  }
-  .tab-content.active {
-    display: block;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 8px;
-  }
-  th, td {
-    border: 1px solid #ddd;
-    padding: 6px;
-    text-align: center;
-  }
-  th {
-    background: #f1f5f9;
-  }
-  .total-section {
-    margin-top: 10px;
-    background: #eef2ff;
-    padding: 8px;
-    border-radius: 8px;
-  }
-  .btn-reset {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 5px;
-  }
-  .btn-reset:hover {
-    background: #dc2626;
-  }
-</style>
-</head>
-<body>
-
-<header>活動積分試算</header>
-<div class="tabs" id="tabs"></div>
-<div id="tabContainer"></div>
-
 <script>
 // === 🧭 活動資料設定區 ===
-// 每個活動可以獨立設定名稱、裝備與道具
+const soldierLevels = {
+  1: 1, 2: 2, 3: 3, 4: 4,
+  5: 6, 6: 9, 7: 12, 8: 17, 9: 22, 10: 30
+};
+
 const activitiesData = [
   {
     name: "11/10第一次軍備競演",
@@ -110,7 +30,7 @@ const activitiesData = [
     items: [
       ["消耗1個火晶提升建築等級(100)", 100],
       ["消耗1個稀有英雄碎片(15)", 15],
-      ["消耗1個史詩英雄碎片(50點)", 50],
+      ["消耗1個史詩英雄碎片(50)", 50],
       ["消耗1個傳說英雄碎片(125)", 125],
       ["消耗1分鐘加速進行建造(1)", 1],
       ["消耗1分鐘加速進行研究(1)", 1],
@@ -119,7 +39,7 @@ const activitiesData = [
   },
   {
     name: "11/12第一次士官計畫",
-        equips: [],
+    equips: [],
     items: [
       ["領主寶石最高評分提升1點(70)", 70],
       ["消耗1個英雄裝備專精能源石(6000)", 6000],
@@ -136,7 +56,8 @@ const activitiesData = [
       ["訓練1位9級士兵(22)", 9],
       ["訓練1位10級士兵(30)", 30],
       ["訓練1位11級士兵(37)", 37],
-      ["晉升士兵所得積分為訓練對應等級士兵的積分差值", 1]
+      // 🔥 特殊的「晉升士兵」項目，這行會產生特殊輸入區
+      ["消耗1分鐘加速進行士兵訓練、士兵晉升(1積分)", "promotion"]
     ]
   },
   {
@@ -160,7 +81,7 @@ const activitiesData = [
       ["神話T4-1星1階", 3020],["神話T4-1星2階", 3090],["神話T4-1星3階", 3100],["神話T4-1星4階", 3090],["神話T4-2星", 3100],["神話T4-2星1階", 3010],["神話T4-2星2階", 3100],["神話T4-2星3階", 3090],["神話T4-2星4階", 3100],
       ["神話T4-3星", 3090]
     ],
-    items: [
+    items: [  
     ["消耗1個火晶提升建築等級(100)", 100],
     ["消耗1分鐘的加速學習專家技能(1)", 1],
     ["消耗1個火晶微粒進行科技研究(50)", 50],
@@ -169,9 +90,8 @@ const activitiesData = [
     ["消耗1個英雄裝備專精能源石(800)", 800],
     ["消耗1分鐘加速進行建造(1)", 1],
     ["消耗1分鐘加速進行研究(1)", 1],
-    ["消耗1分鐘加速進行士兵訓練、士兵晉升(1)", 1]
-    ["消耗1個任意英雄專屬裝備對應的零件(專武)(1600)", 1600]
-    ]
+    ["消耗1分鐘加速進行士兵訓練、士兵晉升(1)", 1],
+    ["消耗1個任意英雄專屬裝備對應的零件(專武)(1600)", 1600]]
   },
   {
     name: "11/16第二次士官計畫",
@@ -214,51 +134,75 @@ activitiesData.forEach((activity, idx) => {
   const id = idx + 1;
   const { name, equips, items } = activity;
 
-  // 建立分頁按鈕
   const btn = document.createElement("button");
   btn.textContent = name;
   btn.onclick = () => switchTab(id);
   if (id === 1) btn.classList.add("active");
   tabsDiv.appendChild(btn);
 
-  // 建立分頁內容
   const div = document.createElement("div");
   div.id = "tab" + id;
   div.className = "tab-content" + (id === 1 ? " active" : "");
 
-  // 內容 HTML
   div.innerHTML = `
     <h2>${name}</h2>
     <div class="total-section">
       <label>目標積分：</label>
       <input type="number" id="target${id}" placeholder="輸入目標積分" />
     </div>
-    <h3>裝備選項（×3倍積分）</h3>
-    <table>
-      <tr><th>裝備</th><th>選擇</th><th>積分</th></tr>
-      ${[1,2,3,4].map(i => `
-        <tr>
-          <td>裝備${i}</td>
-          <td>
-            <select class="equip" data-tab="${id}">
-              <option value="0">請選擇裝備</option>
-              ${equips.map(([ename, score]) =>
-                `<option value="${score}">${ename} (${score})</option>`).join('')}
-            </select>
-          </td>
-          <td class="equip-total">0</td>
-        </tr>`).join("")}
-    </table>
+
+    ${
+      equips.length
+        ? `<h3>裝備選項（×3倍積分）</h3>
+        <table>
+          <tr><th>裝備</th><th>選擇</th><th>積分</th></tr>
+          ${[1,2,3,4].map(i => `
+            <tr>
+              <td>裝備${i}</td>
+              <td>
+                <select class="equip" data-tab="${id}">
+                  <option value="0">請選擇裝備</option>
+                  ${equips.map(([ename, score]) =>
+                    `<option value="${score}">${ename} (${score})</option>`).join('')}
+                </select>
+              </td>
+              <td class="equip-total">0</td>
+            </tr>`).join("")}
+        </table>`
+        : ""
+    }
 
     <h3>道具</h3>
     <table>
-      <tr><th>道具名稱</th><th>數量</th><th>積分</th></tr>
-      ${items.map(([iname, score]) => `
-        <tr>
-          <td>${iname}</td>
-          <td><input type="number" class="qty" data-tab="${id}" data-score="${score}" value="0" min="0"></td>
-          <td class="subtotal">0</td>
-        </tr>`).join("")}
+      <tr><th>道具名稱</th><th>設定 / 數量</th><th>積分</th></tr>
+      ${items.map(([iname, score]) => {
+        if (score === "promotion") {
+          return `
+          <tr class="promotion-row">
+            <td>${iname}</td>
+            <td>
+              初始等級：
+              <select class="lv-start" data-tab="${id}">
+                ${Object.keys(soldierLevels).map(lv => `<option value="${lv}">LV${lv}</option>`).join("")}
+              </select>
+              → 晉升後：
+              <select class="lv-end" data-tab="${id}">
+                ${Object.keys(soldierLevels).map(lv => `<option value="${lv}">LV${lv}</option>`).join("")}
+              </select>
+              數量：
+              <input type="number" class="promo-qty" data-tab="${id}" value="0" min="0">
+            </td>
+            <td class="promo-total">0</td>
+          </tr>`;
+        } else {
+          return `
+          <tr>
+            <td>${iname}</td>
+            <td><input type="number" class="qty" data-tab="${id}" data-score="${score}" value="0" min="0"></td>
+            <td class="subtotal">0</td>
+          </tr>`;
+        }
+      }).join("")}
     </table>
 
     <div class="total-section">
@@ -280,7 +224,7 @@ function switchTab(n) {
   });
 }
 
-// === 即時計算積分 ===
+// === 計算邏輯 ===
 document.addEventListener("input", (e) => {
   const tab = e.target.closest(".tab-content");
   if (!tab) return;
@@ -299,7 +243,7 @@ function updateTab(tabId) {
     total += subtotal;
   });
 
-  // 道具積分
+  // 一般道具積分
   document.querySelectorAll(`#tab${tabId} .qty`).forEach(input => {
     const qty = Number(input.value) || 0;
     const score = Number(input.dataset.score);
@@ -308,26 +252,31 @@ function updateTab(tabId) {
     total += subtotal;
   });
 
+  // 特殊晉升項目
+  document.querySelectorAll(`#tab${tabId} .promotion-row`).forEach(row => {
+    const lvStart = Number(row.querySelector(".lv-start").value);
+    const lvEnd = Number(row.querySelector(".lv-end").value);
+    const qty = Number(row.querySelector(".promo-qty").value) || 0;
+    const diff = Math.max((soldierLevels[lvEnd] || 0) - (soldierLevels[lvStart] || 0), 0);
+    const subtotal = diff * qty;
+    row.querySelector(".promo-total").textContent = subtotal;
+    total += subtotal;
+  });
+
+  // 總積分更新
   document.getElementById(`total${tabId}`).textContent = total;
 
   const target = Number(document.getElementById(`target${tabId}`).value) || 0;
-  const diff = Math.max(target - total, 0);
-  document.getElementById(`diff${tabId}`).textContent = diff;
+  document.getElementById(`diff${tabId}`).textContent = Math.max(target - total, 0);
 }
 
 // === 重置功能 ===
 function resetTab(id) {
-  document.querySelectorAll(`#tab${id} .qty`).forEach(input => input.value = 0);
-  document.querySelectorAll(`#tab${id} .subtotal, #tab${id} .equip-total`).forEach(td => td.textContent = 0);
+  document.querySelectorAll(`#tab${id} input[type=number]`).forEach(input => input.value = 0);
+  document.querySelectorAll(`#tab${id} .subtotal, #tab${id} .equip-total, #tab${id} .promo-total`).forEach(td => td.textContent = 0);
   document.querySelectorAll(`#tab${id} .equip`).forEach(sel => sel.value = 0);
   document.getElementById(`target${id}`).value = "";
   document.getElementById(`total${id}`).textContent = "0";
   document.getElementById(`diff${id}`).textContent = "0";
 }
 </script>
-
-</body>
-</html>
-
-
-
